@@ -65,6 +65,8 @@ public class SelectedContactsAdapter extends RecyclerView.Adapter<SelectedContac
 
     }
 
+
+
     @Override
     public int getItemCount() {
         return mSelectedContactList.size();
@@ -101,5 +103,10 @@ public class SelectedContactsAdapter extends RecyclerView.Adapter<SelectedContac
         }
     }
 
+    public void removeItemAt(int position)
+    {
+        mSelectedContactList.remove(position);
+        notifyItemRemoved(position);
+    }
 
 }

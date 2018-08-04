@@ -200,6 +200,12 @@
         <item name="android:windowExitAnimation">@anim/slide_bottom</item>
     </style>
 
+    <style name="DialogAnimationTooDouenTopBottom">
+        <item name="android:windowEnterAnimation">@anim/slip_top_to_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slip_top_to_bottom</item>
+    </style>
+
+
     <style name="datepicker" parent="Theme.AppCompat.Light.Dialog">
        <!-- <item name="colorPrimary">@color/colorPink</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
