@@ -207,9 +207,14 @@
 
 
     <style name="datepicker" parent="Theme.AppCompat.Light.Dialog">
-       <!-- <item name="colorPrimary">@color/colorPink</item>
+        <item name="colorPrimary">@color/linkedin_blue</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorPink</item>-->
+        <item name="colorAccent">@color/linkedin_blue</item>
     </style>
 
+
+    <style name="radionbutton" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/linkedin_blue</item>
+        <item name="android:textColorSecondary">@color/linkedin_blue</item>
+    </style>
 </resources>

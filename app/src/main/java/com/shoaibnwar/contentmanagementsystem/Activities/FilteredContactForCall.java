@@ -56,6 +56,7 @@ public class FilteredContactForCall extends AppCompatActivity {
     EditText search_view;
     TextView tv_select_all;
     int count = 0;
+    int currentCallNumber = 0;
 
     private boolean initiated;
     private Drawable background;
@@ -67,16 +68,29 @@ public class FilteredContactForCall extends AppCompatActivity {
     SelectedContactsAdapter contactAdapter;
     android.support.design.widget.FloatingActionButton fb_play_lable, fb_pause_lable;
     boolean isDeleted = false;
+    boolean callingProcess = false;
+    ArrayList<HashMap<String, String>> dataList;
+    RelativeLayout rl_iv_back_arrow;
+    int backStatus = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtered_contact_for_call);
 
+
         init();
         gettingValuesFromDB();
-        fbPlayButtonClickHanlder();
+        if (doesUserHavePermission()) {
+            fbPlayButtonClickHanlder();
+        }else {
+            checkPermissionForCall();
+        }
         fbPauseButtonClickHanlder();
+        onBackArrowClickListener();
+
+
     }
     private void init() {
         Intent intent = getIntent();
@@ -94,7 +108,10 @@ public class FilteredContactForCall extends AppCompatActivity {
         fb_play_lable.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.linkedin_blue)));
         fb_pause_lable.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.linkedin_blue)));
 
-        //floating button menu
+        dataList = new ArrayList<>();
+        rl_iv_back_arrow = (RelativeLayout) findViewById(R.id.rl_iv_back_arrow);
+
+
     }
 
     private void ininit(){
@@ -116,7 +133,7 @@ public class FilteredContactForCall extends AppCompatActivity {
         int currentCount = db.getCount();
         // if (currentCount!= count) {
         ArrayList<ContactDbHelper> dbHelpers = db.getContacts();
-        ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
+
         if (dbHelpers.size() > 0) {
             for (ContactDbHelper helpler : dbHelpers) {
                 String id = helpler.getId();
@@ -207,15 +224,33 @@ public class FilteredContactForCall extends AppCompatActivity {
                 .getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener,PhoneStateListener.LISTEN_CALL_STATE);
 
+        currentCallNumber = currentCallNumber+1;
+        backStatus = 0;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.e("TAG", "the result code is " + requestCode);
-        Log.e("TAG", "the result code is " + resultCode);
+        // Check which request we're responding to
+        if (requestCode == 111) {
 
+              if (callingProcess) {
+                  Log.e("TAg", "the result back is " );
+                        int nunberLeanggth = dataList.size();
+                        if (currentCallNumber>=nunberLeanggth){
+                            Log.e("TAg", "call process ended");
+                            fb_play_lable.setVisibility(View.VISIBLE);
+                            fb_pause_lable.setVisibility(View.GONE);
+                            callingProcess = false;
+                        }else {
+
+                            String number  = dataList.get(currentCallNumber).get("number");
+                            makeingCall("03174022272");
+
+                        }
+                    }
+        }
     }
 
     //monitor phone call activities
@@ -246,17 +281,14 @@ public class FilteredContactForCall extends AppCompatActivity {
                 Log.e(LOG_TAG, "IDLE");
 
                 if (isPhoneCalling) {
+                        Log.e(LOG_TAG, "Back to Applicaiton");
+                        if (backStatus==0) {
+                            Intent i = new Intent(FilteredContactForCall.this, AfterCallDetailActivity.class);
+                            startActivityForResult(i, 111);
+                            isPhoneCalling = false;
+                        }
+                        backStatus = 12;
 
-                    Log.e(LOG_TAG, "Back to Applicaiton");
-
-                    // restart app
-                    Intent i = getPackageManager()
-                            .getLaunchIntentForPackage(
-                                    getPackageName());
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
-
-                    isPhoneCalling = false;
                 }
 
             }
@@ -268,11 +300,15 @@ public class FilteredContactForCall extends AppCompatActivity {
         fb_play_lable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 fb_play_lable.setVisibility(View.GONE);
                 fb_pause_lable.setVisibility(View.VISIBLE);
+                callingProcess = true;
+                makeingCall("04235972039");
+
+
             }
         });
-
     }
 
     private void fbPauseButtonClickHanlder()
@@ -282,9 +318,9 @@ public class FilteredContactForCall extends AppCompatActivity {
             public void onClick(View v) {
                 fb_play_lable.setVisibility(View.VISIBLE);
                 fb_pause_lable.setVisibility(View.GONE);
+                callingProcess = false;
             }
         });
-
     }
 
     private void onSwiptDeleteAction()
@@ -307,7 +343,6 @@ public class FilteredContactForCall extends AppCompatActivity {
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 // view the background view
-
 
                 View itemView = viewHolder.itemView;
                 if (!initiated) {
@@ -348,4 +383,15 @@ public class FilteredContactForCall extends AppCompatActivity {
 // attaching the touch helper to recycler view
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvContacts);
     }
+
+    private void onBackArrowClickListener()
+    {
+        rl_iv_back_arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
 }

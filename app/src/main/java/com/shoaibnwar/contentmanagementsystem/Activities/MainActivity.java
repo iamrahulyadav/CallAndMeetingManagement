@@ -1,6 +1,7 @@
 package com.shoaibnwar.contentmanagementsystem.Activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+       /* startActivity(new Intent(MainActivity.this, AfterCallDetailActivity.class));
+        finish();*/
         init();
         onDairyTabClickListener();
         onPetTabClickListener();
